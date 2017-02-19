@@ -96,15 +96,6 @@ PugInjectPlugin.prototype.pugInject = function (compilation,compiler) {
     fs.mkdirSync(dirname)
   }
   fs.writeFileSync(this.options.outputFilePath, content, 'utf-8')
-  //写入文件, 这种写入方式在内存中, express获取不到
-  // compilation.assets[this.options.output] = {
-  //   source: function() {
-  //     return content;
-  //   },
-  //   size: function() {
-  //     return content.length;
-  //   }
-  // }
 }
 /**
  * extract images
@@ -120,24 +111,38 @@ PugInjectPlugin.prototype.extractImages = function(content,compilation){
   while ((result = REGX.exec(content)) != null)  {
     var imageSrc = result[2]
     if(imageREGX.test(imageSrc) && !httpREGX.test(imageSrc)){
-      //加入
       _this.images.push(imageSrc)
       var originSrcUrl = path.resolve(this.options.filePath.split('views')[0], imageSrc)
       //var outputSrcUrl = path.resolve(this.options.output, imageSrc)
-      var stat = fs.statSync(originSrcUrl)
-      if(stat.isFile()){
-        compilation.assets[imageSrc] = {
-          source: function() {
-            return fs.readFileSync(originSrcUrl)
-          },
-          size: function() {
-            return stat.size
-          }
-        }
-      }
-
+      _this.addToAssets(originSrcUrl,imageSrc,compilation)
     }
   }
+}
+/**
+ * add to assets
+ */
+PugInjectPlugin.prototype.addToAssets = function(originFile,outputFile,compilation){
+  var stat = fs.statSync(originFile)
+  if(stat.isFile()){
+    compilation.assets[outputFile] = {
+      source: function() {
+        return fs.readFileSync(originFile)
+      },
+      size: function() {
+        return stat.size
+      }
+    }
+  }
+}
+/**
+ * write file
+ */
+PugInjectPlugin.prototype.copyFile = function(originFile,targetFile){
+  fs.readFile(originFile,function(err,content){
+    fs.writeFile(targetFile,content,function(err){
+      //console.log(err)
+    })
+  })
 }
 /**
  * add file to watch
@@ -170,9 +175,29 @@ PugInjectPlugin.prototype.apply = function (compiler) {
     globalRef.output = compiler.options.devServer.outputPath
   }
   _this.options = Object.assign(globalRef,_this.options)
-  
+
+  // compiler.plugin('make', function (compilation,callback) {
+  //   if(_this.options.favicon){
+  //     var filepath = path.resolve(_this.options.context, _this.options.favicon)
+  //     var filename = path.basename(filepath)
+  //     var outputPath = path.resolve(_this.options.output, filename)
+  //     //console.log(filepath + ' ' + outputPath)
+  //     if(!fs.existsSync(outputPath)){
+  //       //console.log('开始复制 ' + filepath + ' 到 ' + outputPath)
+  //       _this.copyFile(filepath,outputPath)
+  //     }
+  //   }
+  //   callback()
+  // })   
+
   compiler.plugin('emit', function (compilation,callback) {
     _this.pugInject(compilation,compiler)
+    //add favicon
+    if(_this.options.favicon){
+      var filepath = path.resolve(_this.options.context, _this.options.favicon)
+      var filename = path.basename(filepath)
+      _this.addToAssets(filepath,filename,compilation)
+    }    
     callback()
   })
   compiler.plugin('after-emit', function (compilation,callback) {
