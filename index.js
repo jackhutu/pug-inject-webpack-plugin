@@ -102,12 +102,24 @@ PugInjectPlugin.prototype.pugInject = function (compilation) {
   // }
 }
 
+/**
+ * add file to watch
+ */
+PugInjectPlugin.prototype.addWatch = function(compilation){
+  //fileDependencies,contextDependencies
+  compilation.fileDependencies.push(this.options.filePath)
+}
+
 PugInjectPlugin.prototype.apply = function (compiler) {
   var _this = this
   compiler.plugin('emit', function (compilation,callback) {
     _this.pugInject(compilation)
     callback()
   })
+  compiler.plugin('after-emit', function (compilation,callback) {
+    _this.addWatch(compilation)
+    callback()
+  })  
 }
 
 module.exports = PugInjectPlugin
