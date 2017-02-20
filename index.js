@@ -68,8 +68,10 @@ PugInjectPlugin.prototype.pugInject = function (compilation,compiler) {
       //获取要注入的文件名
       this.options.injectJs.forEach(function (file) {
         //加上hash字符串
-        var filename = path.basename(file,'.js')
-        var jsTags = makeTags(filename,assets,'js', hash)
+        if(/\.js$/.test(file)){
+          file = file.replace('.js','')
+        }
+        var jsTags = makeTags(file,assets,'js', hash)
         if(jsTags !== ''){
           jsLinks.push(jsTags)
         }
@@ -81,8 +83,10 @@ PugInjectPlugin.prototype.pugInject = function (compilation,compiler) {
       var cssLinks = [];
       this.options.injectCss.forEach(function (file) {
         //配置加不加扩展名都可以
-        var filename = path.basename(file,'.css')
-        var cssTags = makeTags(filename,assets,'css', hash)
+        if(/\.js$/.test(file)){
+          file = file.replace('.css','')
+        }
+        var cssTags = makeTags(file,assets,'css', hash)
         if(cssTags !== ''){
           cssLinks.push(cssTags)
         }
