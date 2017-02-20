@@ -1,6 +1,6 @@
 {
   "name": "pug-inject-webpack-plugin",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "pug template inject plugin",
   "main": "index.js",
   "homepage": "https://github.com/jackhutu/pug-inject-webpack-plugin",

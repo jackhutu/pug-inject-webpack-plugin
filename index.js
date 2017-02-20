@@ -21,11 +21,11 @@ function makeTags(file, assets, type, hash) {
     if(type === 'js'){
       //是否有hash符都匹配
       if(i.substr(-4) !== '.map' && (i === 'js/' + file + '.' + hash + '.js' || i === 'js/' + file + '.js')){
-        tags += 'script(type="text/javascript" src="' + path.normalize(i) + '")'
+        tags += 'script(type="text/javascript" src="' + '/' + path.normalize(i) + '")'
       }
     }else if(type === 'css'){
       if(i.substr(-4) !== '.map' && (i === 'styles/' + file + '.' + hash + '.css' || i === 'styles/' + file + '.css')){
-        tags += 'link(rel="stylesheet", href="' + path.normalize(i) + '")'
+        tags += 'link(rel="stylesheet", href="' + '/' + path.normalize(i) + '")'
       }        
     }
   })
