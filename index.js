@@ -113,8 +113,8 @@ PugInjectPlugin.prototype.extractImages = function(content,compilation){
   var result
   _this.images = []
   while ((result = REGX.exec(content)) != null)  {
-    var imageSrc = result[2]
-    if(imageREGX.test(imageSrc) && !httpREGX.test(imageSrc)){
+    var imageSrc = result[2]?result[2].trim(''):''
+    if(imageSrc !== '' && imageREGX.test(imageSrc) && !httpREGX.test(imageSrc)){
       _this.images.push(imageSrc)
       var originSrcUrl = path.resolve(this.options.filePath.split('views')[0], imageSrc)
       //var outputSrcUrl = path.resolve(this.options.output, imageSrc)
