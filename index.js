@@ -115,13 +115,15 @@ PugInjectPlugin.prototype.extractImages = function(content,compilation){
   while ((result = REGX.exec(content)) != null)  {
     var imageSrc = result[2]?result[2].trim(''):''
     if(imageSrc !== '' && imageREGX.test(imageSrc) && !httpREGX.test(imageSrc)){
-      _this.images.push(imageSrc)
       var originSrcUrl
       if(path.isAbsolute(imageSrc)){
         originSrcUrl = path.join(this.options.filePath.split('views')[0], imageSrc)
+        //绝对路径图片需要更改
+        imageSrc = path.join(this.options.output, imageSrc).replace(this.options.output+'/', '')
       }else{
         originSrcUrl = path.resolve(this.options.filePath.split('views')[0], imageSrc)
       }
+      _this.images.push(imageSrc)      
       //var outputSrcUrl = path.resolve(this.options.output, imageSrc)
       _this.addToAssets(originSrcUrl,imageSrc,compilation)
     }
@@ -131,7 +133,6 @@ PugInjectPlugin.prototype.extractImages = function(content,compilation){
  * add to assets
  */
 PugInjectPlugin.prototype.addToAssets = function(originFile,outputFile,compilation){
-  console.log(originFile)
   var stat = fs.statSync(originFile)
   if(stat.isFile()){
     compilation.assets[outputFile] = {
