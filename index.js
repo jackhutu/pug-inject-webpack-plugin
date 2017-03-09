@@ -107,7 +107,7 @@ PugInjectPlugin.prototype.pugInject = function (compilation,compiler) {
 PugInjectPlugin.prototype.extractImages = function(content,compilation){
   var _this = this
   //匹配图片
-  var REGX = /img\(.*?src=("|')(.+?)("|').*\)/ig
+  var REGX = /img.*?\(.*?src=("|')(.+?)("|').*\)/ig
   var httpREGX = /^(https|http|ftp|rtsp|mms)/i
   var imageREGX = /(jpe?g|gif|png)$/i
   var result
